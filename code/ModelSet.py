@@ -32,14 +32,14 @@ class NERModel:
         embedding_layer = Embedding(self.word_dict_size, self.word_vec_size, name='embedding_layer')(input_layer)
         pos_embedding_layer = Embedding(self.pos_dict_size, self.word_vec_size, name='pos_embedding_layer')(pos_input_layer)
         combine_embedding_layer = Add()([embedding_layer, pos_embedding_layer])
-        bilstm = Bidirectional(LSTM(32, return_sequences=True))(combine_embedding_layer)
+        bilstm = Bidirectional(LSTM(128, return_sequences=True))(combine_embedding_layer)
         bilstm_d = Dropout(0.2)(bilstm)
         half_window_size = 2
         paddinglayer = ZeroPadding1D(padding=half_window_size)(embedding_layer)
 
-        conv = Conv1D(nb_filter=32, filter_length=(2 * half_window_size + 1), border_mode='valid')(paddinglayer)
+        conv = Conv1D(nb_filter=64, filter_length=(2 * half_window_size + 1), border_mode='valid')(paddinglayer)
         conv_d = Dropout(0.3)(conv)
-        dense_conv = TimeDistributed(Dense(32))(conv_d)
+        dense_conv = TimeDistributed(Dense(64))(conv_d)
         rnn_cnn_merge = concatenate([bilstm_d, dense_conv], axis=2)
         dense = TimeDistributed(Dense(self.class_label_count))(rnn_cnn_merge)
         dense = Dropout(0.1)(dense) 
@@ -62,9 +62,9 @@ class NERModel:
         half_window_size = 2
         paddinglayer = ZeroPadding1D(padding=half_window_size)(embedding_layer)
 
-        conv = Conv1D(nb_filter=32, filter_length=(2 * half_window_size + 1), border_mode='valid')(paddinglayer)
+        conv = Conv1D(nb_filter=64, filter_length=(2 * half_window_size + 1), border_mode='valid')(paddinglayer)
         conv_d = Dropout(0.3)(conv)
-        dense_conv = TimeDistributed(Dense(32))(conv_d)
+        dense_conv = TimeDistributed(Dense(64))(conv_d)
         rnn_cnn_merge = concatenate([bilstm_d, dense_conv], axis=2)
         dense = TimeDistributed(Dense(self.class_label_count))(rnn_cnn_merge)
         dense = Dropout(0.1)(dense) 
